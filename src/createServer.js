@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 'use strict';
 
 const http = require('http');
@@ -20,19 +19,18 @@ const getParamsObj = (url) => {
 function createServer() {
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://localhost:5700');
+    const pathname = url.pathname.slice(1);
+
+    const parts = pathname === '' ? [] : pathname.split('/');
 
     const resObject = {
-      parts: [
-        ...url.pathname
-          .slice(1)
-          .replace(/\/{2,}/g, '/')
-          .split('/'),
-      ],
+      parts,
       query: getParamsObj(url),
     };
 
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ ...resObject }));
+    res.statusCode = 200;
+    res.end(JSON.stringify(resObject));
   });
 
   return server;
